@@ -13,6 +13,7 @@ public class SurfaceChecker : MonoBehaviour
     Animator letterCloseAnimator;
     Animator letterOpenAnimator;
     public AudioSource audioPlayer;
+    public AudioSource BGPlayer;
     public AudioClip yesOrNo;
     public Canvas canvas;
     public Animator panel;
@@ -27,6 +28,8 @@ public class SurfaceChecker : MonoBehaviour
     public GameObject dialogBox;
     Button yesButton;
     Button noButton;
+    public GameObject congratulations;
+    public GameObject sorry;
     public GameObject resetObject;
     public GameObject yesObject;
     public GameObject noObject;
@@ -70,6 +73,8 @@ public class SurfaceChecker : MonoBehaviour
         dialogBox.GetComponent<DialogBox>().textMeshPro.GetComponent<TMPro.TextMeshPro>().text = "Hello";
         dialogBox.SetActive(false);
         playerPOS.rotation = new Quaternion(0,0,0,0) ;
+        congratulations.SetActive(false);
+        sorry.SetActive(false);
         letterClose.SetActive(false);
         letterOpen.SetActive(false);
         yesObject.SetActive(false);
@@ -80,9 +85,10 @@ public class SurfaceChecker : MonoBehaviour
         isStart = false;
         yesButton.onClick.AddListener(delegate ()
         {
+            congratulations.SetActive(true);
+            letterOpen.SetActive(false);
             //letterClose.SetActive(false);
             //letterOpen.SetActive(false);
-            
             heart.SetActive(true);
             brokenHeart.SetActive(false);
             //heart.transform.position = playerPOS.position + new Vector3(0, 0f, 5f);
@@ -94,9 +100,10 @@ public class SurfaceChecker : MonoBehaviour
         });
         noButton.onClick.AddListener(delegate ()
         {
+            sorry.SetActive(true);
+            letterOpen.SetActive(false);
             //letterClose.SetActive(false);
             //letterOpen.SetActive(false);
-            
             brokenHeart.SetActive(true);
             heart.SetActive(false);
             //brokenHeart.transform.position = playerPOS.position + new Vector3(0, 0f, 5f);
@@ -171,6 +178,7 @@ public class SurfaceChecker : MonoBehaviour
                     playerPOS.rotation = GameObject.Find("AR Camera").transform.rotation;
                     playerPOS.rotation = GameObject.Find("AR Camera").transform.rotation;
                     isStart = true;
+                    BGPlayer.Play();
                     dialogBox.SetActive(true);
                     resetObject.SetActive(true);
                     Debug.Log(Input.GetTouch(0).position);
@@ -244,8 +252,9 @@ public class SurfaceChecker : MonoBehaviour
 
     }
     IEnumerator LetterOpen() {
+        letterOpen.SetActive(true);
         letterOpenAnimator.SetBool("play", true);
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
         //letterOpenAnimator.SetBool("play", false);
         //letterOpen.SetActive(false);
         StartCoroutine("FadeIn");
@@ -253,11 +262,13 @@ public class SurfaceChecker : MonoBehaviour
 
     IEnumerator LetterClose(){
         letterClose.SetActive(true);
-        letterOpen.SetActive(true);
+        //letterOpen.SetActive(true);
         //letterClose.transform.position = playerPOS.position + new Vector3(2f, 3f, 15f);
         //letterClose.transform.eulerAngles = GameObject.Find("AR Camera").transform.eulerAngles;
         letterCloseAnimator.SetBool("play", true);
-        yield return new WaitForSeconds(1.833f);
+        yield return new WaitForSeconds(1f);
+        letterCloseAnimator.SetBool("change", true);
+        yield return new WaitForSeconds(1f);
         //letterCloseAnimator.SetBool("play", false);
         StartCoroutine("LetterOpen");
     }
@@ -278,6 +289,7 @@ public class SurfaceChecker : MonoBehaviour
         //NoAnimator.SetBool("Start", false);
     }
     IEnumerator FadeOut(string status) {
+        BGPlayer.Stop();
         panel.SetBool("finish", true);
         yesObject.SetActive(false);
         noObject.SetActive(false);
